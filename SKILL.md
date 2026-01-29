@@ -41,9 +41,9 @@ python3 scripts/setup_cron.py
 
 Each topic has:
 
-- **name** - Display name (e.g., "ETH Price Tracking")
-- **query** - Search query (e.g., "Ethereum price USD")
-- **keywords** - Relevance filters (["ETH", "Ethereum", "price"])
+- **name** - Display name (e.g., "AI Model Releases")
+- **query** - Search query (e.g., "new AI model release announcement")
+- **keywords** - Relevance filters (["GPT", "Claude", "Llama", "release"])
 - **frequency** - `hourly`, `daily`, `weekly`
 - **importance_threshold** - `high` (alert immediately), `medium` (alert if important), `low` (digest only)
 - **channels** - Where to send alerts (["telegram", "discord"])
@@ -55,37 +55,37 @@ Each topic has:
 {
   "topics": [
     {
-      "id": "eth-price",
-      "name": "ETH Price Alerts",
-      "query": "Ethereum price significant change",
-      "keywords": ["ETH", "Ethereum", "cryptocurrency"],
-      "frequency": "hourly",
+      "id": "ai-models",
+      "name": "AI Model Releases",
+      "query": "new AI model release GPT Claude Llama",
+      "keywords": ["GPT", "Claude", "Llama", "release", "announcement"],
+      "frequency": "daily",
       "importance_threshold": "high",
       "channels": ["telegram"],
-      "context": "Tracking for investment decisions",
-      "alert_on": ["price_change_10pct", "major_news"]
-    },
-    {
-      "id": "fm26-patches",
-      "name": "Football Manager 26 Updates",
-      "query": "Football Manager 2026 patch update",
-      "keywords": ["FM26", "patch", "update", "Sports Interactive"],
-      "frequency": "daily",
-      "importance_threshold": "medium",
-      "channels": ["telegram"],
-      "context": "Playing career mode, want bug fixes",
-      "alert_on": ["patch_release", "major_bug_fix"]
-    },
-    {
-      "id": "ai-breakthroughs",
-      "name": "AI Research Breakthroughs",
-      "query": "artificial intelligence breakthrough research",
-      "keywords": ["AI", "LLM", "transformer", "AGI"],
-      "frequency": "daily",
-      "importance_threshold": "medium",
-      "channels": ["telegram"],
       "context": "Following AI developments for work",
-      "alert_on": ["major_paper", "model_release"]
+      "alert_on": ["model_release", "major_update"]
+    },
+    {
+      "id": "tech-news",
+      "name": "Tech Industry News",
+      "query": "technology startup funding acquisition",
+      "keywords": ["startup", "funding", "Series A", "acquisition"],
+      "frequency": "daily",
+      "importance_threshold": "medium",
+      "channels": ["telegram"],
+      "context": "Staying informed on tech trends",
+      "alert_on": ["major_funding", "acquisition"]
+    },
+    {
+      "id": "security-alerts",
+      "name": "Security Vulnerabilities",
+      "query": "CVE critical vulnerability security patch",
+      "keywords": ["CVE", "vulnerability", "security", "patch", "critical"],
+      "frequency": "hourly",
+      "importance_threshold": "high",
+      "channels": ["telegram", "email"],
+      "context": "DevOps security monitoring",
+      "alert_on": ["critical_cve", "zero_day"]
     }
   ],
   "settings": {
@@ -174,21 +174,21 @@ Output format:
 
 ## 🔥 Highlights
 
-- **ETH Price**: Jumped 15% following SEC approval news
-- **FM26**: Patch 26.3.1 released fixing transfer bug you reported
+- **AI Models**: Claude 4.5 released with improved reasoning
+- **Security**: Critical CVE patched in popular framework
 
 ## 📊 By Topic
 
-### ETH Price Tracking
+### AI Model Releases
 - [3 findings this week]
 
-### Football Manager 26 Updates
+### Security Vulnerabilities
 - [1 finding this week]
 
 ## 💡 Recommendations
 
 Based on your interests, you might want to monitor:
-- "SEC crypto regulation" (mentioned 3x this week)
+- "Kubernetes security" (mentioned 3x this week)
 ```
 
 ### setup_cron.py
@@ -281,20 +281,20 @@ Help the AI connect dots:
 ```markdown
 # Memory Hints for Proactive Research
 
-## ETH Price
-- Tracking for potential investment
-- Interested in regulatory news (SEC, EU)
-- Sold at $2800, watching for re-entry
+## AI Models
+- Using Claude for coding assistance
+- Interested in reasoning improvements
+- Comparing models for different use cases
 
-## FM26
-- Playing career mode with custom tactics
-- Frustrated by transfer bug (should be fixed now)
-- Interested in editor updates
+## Security
+- Running production Kubernetes clusters
+- Need to patch critical CVEs quickly
+- Interested in zero-day disclosures
 
-## Dirac Live
-- Setting up home studio
-- Using with miniDSP
-- Struggling with bass management below 80Hz
+## Tech News
+- Following startup ecosystem
+- Interested in developer tools space
+- Tracking potential acquisition targets
 ```
 
 ## Alert Channels
@@ -452,7 +452,7 @@ Stores digest-worthy findings:
 
 1. **Start conservative** - Set `importance_threshold: medium` initially, adjust based on alert quality
 2. **Use context field** - Helps AI generate better summaries
-3. **Refine keywords** - Add negative keywords to filter noise: `"keywords": ["ETH", "-scam", "-airdrop"]`
+3. **Refine keywords** - Add negative keywords to filter noise: `"keywords": ["AI", "-clickbait", "-spam"]`
 4. **Enable learning** - Improves over time based on your behavior
 5. **Review digest weekly** - Don't ignore the digest—it surfaces patterns
 6. **Combine with personal-analytics** - Get topic recommendations based on your chat patterns

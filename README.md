@@ -21,15 +21,15 @@ Proactive Research transforms your assistant from reactive to proactive by conti
 cp config.example.json config.json
 
 # 2. Add your first topic
-python3 scripts/manage_topics.py add "ETH Price" \
-  --query "Ethereum price significant change" \
-  --keywords "ETH,Ethereum,price" \
-  --frequency hourly \
+python3 scripts/manage_topics.py add "AI Models" \
+  --query "new AI model release announcement" \
+  --keywords "GPT,Claude,Llama,release" \
+  --frequency daily \
   --importance high \
   --channels telegram
 
 # 3. Test it
-python3 scripts/manage_topics.py test eth-price
+python3 scripts/manage_topics.py test ai-models
 
 # 4. Set up automated monitoring
 python3 scripts/setup_cron.py
@@ -38,7 +38,7 @@ python3 scripts/setup_cron.py
 ## Use Cases
 
 ### 📈 Price Monitoring
-Track cryptocurrency, stocks, or product prices with alerts on significant changes.
+Track product prices, SaaS pricing changes, or market trends with alerts on significant changes.
 
 ### 🔧 Product Updates
 Monitor software releases, patches, and feature announcements.
@@ -111,7 +111,7 @@ python3 scripts/manage_topics.py test topic-id
 python3 scripts/monitor.py --dry-run --verbose
 
 # Check specific topic
-python3 scripts/monitor.py --topic eth-price
+python3 scripts/monitor.py --topic ai-models
 
 # Check all hourly topics
 python3 scripts/monitor.py --frequency hourly
