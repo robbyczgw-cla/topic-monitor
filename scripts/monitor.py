@@ -58,7 +58,7 @@ def search_topic(topic: Dict, dry_run: bool = False) -> List[Dict]:
     """
     Search for topic using available search tools.
     
-    In real Moltbot environment, this would use web_search tool.
+    In real OpenClaw environment, this would use web_search tool.
     For standalone testing, returns mock results.
     """
     query = topic.get("query", "")
@@ -70,7 +70,7 @@ def search_topic(topic: Dict, dry_run: bool = False) -> List[Dict]:
         import subprocess
         try:
             result = subprocess.run(
-                ["python3", str(web_search_plus), "-q", query, "--json"],
+                ["python3", str(web_search_plus), "--query", query, "--max-results", "5"],
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -192,8 +192,8 @@ def send_alert(topic: Dict, result: Dict, priority: str, score: float, reason: s
 
 
 def send_telegram(message: str, priority: str):
-    """Send via Telegram (requires Moltbot message tool)."""
-    # In real environment, this would use Moltbot's message tool
+    """Send via Telegram (requires OpenClaw message tool)."""
+    # In real environment, this would use OpenClaw's message tool
     # For now, just log
     print(f"📱 [TELEGRAM] {priority.upper()}: {message[:100]}...")
 

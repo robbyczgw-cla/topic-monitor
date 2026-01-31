@@ -146,7 +146,7 @@ python3 scripts/setup_cron.py --remove
 
 - **web-search-plus** - Intelligent search routing (Serper, Tavily, Exa)
 - **personal-analytics** - Get topic recommendations from your chat patterns
-- **Moltbot message tool** - Send alerts via Telegram, Discord
+- **OpenClaw message tool** - Send alerts via Telegram, Discord
 
 ### Channel Setup
 
@@ -195,4 +195,4 @@ MIT
 
 ## Credits
 
-Built for ClawdHub by the Moltmates team.
+Built for ClawHub by the Moltmates team.

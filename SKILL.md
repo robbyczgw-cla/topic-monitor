@@ -301,7 +301,7 @@ Help the AI connect dots:
 
 ### Telegram
 
-Requires Moltbot message tool:
+Requires OpenClaw message tool:
 
 ```json
 {
@@ -540,4 +540,4 @@ python3 scripts/manage_topics.py add "Quantum Computing Papers" \
 
 ## Credits
 
-Built for ClawdHub. Uses web-search-plus skill for intelligent search routing.
+Built for ClawHub. Uses web-search-plus skill for intelligent search routing.
