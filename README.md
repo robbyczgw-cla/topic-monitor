@@ -1,8 +1,8 @@
-# Proactive Research
+# Topic Monitor
 
 **Never miss what matters. Get alerted when it happens.**
 
-Proactive Research transforms your assistant from reactive to proactive by continuously monitoring topics you care about and intelligently alerting you only when something truly important occurs.
+Topic Monitor transforms your assistant from reactive to proactive by continuously monitoring topics you care about and intelligently alerting you only when something truly important occurs.
 
 ## Features
 

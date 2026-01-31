@@ -1,13 +1,13 @@
 ---
-name: proactive-research
+name: topic-monitor
 description: Monitor topics of interest and proactively alert when important developments occur. Use when user wants automated monitoring of specific subjects (e.g., product releases, price changes, news topics, technology updates). Supports scheduled web searches, AI-powered importance scoring, smart alerts vs weekly digests, and memory-aware contextual summaries.
 ---
 
-# Proactive Research
+# Topic Monitor
 
 **Monitor what matters. Get notified when it happens.**
 
-Proactive Research transforms your assistant from reactive to proactive by continuously monitoring topics you care about and intelligently alerting you only when something truly matters.
+Topic Monitor transforms your assistant from reactive to proactive by continuously monitoring topics you care about and intelligently alerting you only when something truly matters.
 
 ## Core Capabilities
 
@@ -208,14 +208,14 @@ python3 scripts/setup_cron.py --remove
 
 Creates cron entries:
 ```cron
-# Proactive Research - Hourly topics
-0 * * * * cd /path/to/skills/proactive-research && python3 scripts/monitor.py --frequency hourly
+# Topic Monitor - Hourly topics
+0 * * * * cd /path/to/skills/topic-monitor && python3 scripts/monitor.py --frequency hourly
 
-# Proactive Research - Daily topics  
-0 9 * * * cd /path/to/skills/proactive-research && python3 scripts/monitor.py --frequency daily
+# Topic Monitor - Daily topics  
+0 9 * * * cd /path/to/skills/topic-monitor && python3 scripts/monitor.py --frequency daily
 
-# Proactive Research - Weekly digest
-0 18 * * 0 cd /path/to/skills/proactive-research && python3 scripts/digest.py --send
+# Topic Monitor - Weekly digest
+0 18 * * 0 cd /path/to/skills/topic-monitor && python3 scripts/digest.py --send
 ```
 
 ## AI Importance Scoring
@@ -257,7 +257,7 @@ Learning data stored in `.learning_data.json` (privacy-safe, never shared).
 
 ## Memory Integration
 
-Proactive Research connects to your conversation history:
+Topic Monitor connects to your conversation history:
 
 **Example alert:**
 > 🔔 **Dirac Live Update**
@@ -279,7 +279,7 @@ Proactive Research connects to your conversation history:
 Help the AI connect dots:
 
 ```markdown
-# Memory Hints for Proactive Research
+# Memory Hints for Topic Monitor
 
 ## AI Models
 - Using Claude for coding assistance
