@@ -195,4 +195,4 @@ MIT
 
 ## Credits
 
-Built for ClawHub by the Moltmates team.
+Built for ClawHub.
