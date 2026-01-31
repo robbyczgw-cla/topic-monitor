@@ -16,8 +16,20 @@ Topic Monitor transforms your assistant from reactive to proactive by continuous
 
 ## Quick Start
 
+### Option 1: Interactive Setup (Recommended)
+
+Run the setup wizard for a guided experience:
+
 ```bash
-# 1. Setup
+python3 scripts/setup.py
+```
+
+The wizard asks friendly questions about what you want to monitor and creates your config automatically.
+
+### Option 2: Manual Setup
+
+```bash
+# 1. Copy the template
 cp config.example.json config.json
 
 # 2. Add your first topic

@@ -18,15 +18,63 @@ Topic Monitor transforms your assistant from reactive to proactive by continuous
 5. **Weekly Digest** - Low-priority findings compiled into readable reports
 6. **Memory Integration** - References your past conversations and interests
 
-## Quick Start
+## First Run
+
+When you first use Topic Monitor, run the interactive setup wizard:
 
 ```bash
-# Initialize config
+python3 scripts/setup.py
+```
+
+The wizard will guide you through:
+
+1. **Topics** - What subjects do you want to monitor?
+2. **Search queries** - How to search for each topic
+3. **Keywords** - What terms indicate relevance
+4. **Frequency** - How often to check (hourly/daily/weekly)
+5. **Importance threshold** - When to send alerts (low/medium/high)
+6. **Weekly digest** - Compile non-urgent findings into a summary
+
+The wizard creates `config.json` with your preferences. You can always edit it later or use `manage_topics.py` to add/remove topics.
+
+**Example session:**
+```
+🔍 Topic Monitor - Setup Wizard
+
+What topics do you want to monitor?
+  > AI Model Releases
+  > Security Vulnerabilities
+  > 
+
+--- Topic 1/2: AI Model Releases ---
+  Search query for 'AI Model Releases' [AI Model Releases news updates]: new AI model release announcement
+  Keywords to watch for in 'AI Model Releases'?
+  > GPT, Claude, Llama, release
+
+--- Topic 2/2: Security Vulnerabilities ---
+  Search query for 'Security Vulnerabilities' [Security Vulnerabilities news updates]: CVE critical vulnerability patch
+  Keywords to watch for in 'Security Vulnerabilities'?
+  > CVE, vulnerability, critical, patch
+
+How often should I check for updates?
+  1. hourly
+  2. daily *
+  3. weekly
+
+✅ Setup Complete!
+```
+
+## Quick Start
+
+Already know what you're doing? Here's the manual approach:
+
+```bash
+# Initialize config from template
 cp config.example.json config.json
 
 # Add a topic
-python3 scripts/manage_topics.py add "Dirac Live updates" \
-  --keywords "Dirac Live,room correction,audio" \
+python3 scripts/manage_topics.py add "Product Updates" \
+  --keywords "release,update,patch" \
   --frequency daily \
   --importance medium
 
