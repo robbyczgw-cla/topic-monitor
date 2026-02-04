@@ -1,6 +1,6 @@
 {
   "name": "@openclaw/topic-monitor",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Monitor topics of interest and get proactive alerts when important developments occur",
   "author": "robbyczgw-cla",
   "license": "MIT",
