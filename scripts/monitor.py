@@ -87,7 +87,11 @@ def search_topic(topic: Dict, dry_run: bool = False, verbose: bool = False) -> L
                 capture_output=True,
                 text=True,
                 timeout=45,  # Increased timeout for API calls
-                env={**dict(__import__('os').environ)}  # Pass environment for API keys
+                env={k: v for k, v in os.environ.items() if k in (
+                    "PATH", "HOME", "LANG", "TERM",
+                    "SERPER_API_KEY", "TAVILY_API_KEY", "EXA_API_KEY",
+                    "YOU_API_KEY", "SEARXNG_INSTANCE_URL", "WSP_CACHE_DIR"
+                )}  # Only pass search-relevant env vars
             )
             
             if result.returncode == 0:
@@ -324,34 +328,14 @@ def send_telegram(message: str, priority: str):
 
 
 def send_discord(message: str, priority: str):
-    """Send via Discord webhook (direct HTTP, no agent needed)."""
-    import requests
-    from config import get_channel_config
-    
-    discord_config = get_channel_config("discord")
-    webhook_url = discord_config.get("webhook_url")
-    
-    if not webhook_url:
-        print("⚠️ Discord webhook not configured", file=sys.stderr)
-        return False
-    
-    payload = {
-        "username": discord_config.get("username", "Research Bot"),
-        "avatar_url": discord_config.get("avatar_url"),
-        "content": message
+    """Output Discord alert as JSON for the agent to send via message tool."""
+    alert_output = {
+        "message": message,
+        "priority": priority,
+        "channel": "discord"
     }
-    
-    try:
-        resp = requests.post(webhook_url, json=payload, timeout=10)
-        if resp.status_code in (200, 204):
-            print(f"✅ Sent to Discord")
-            return True
-        else:
-            print(f"❌ Discord returned {resp.status_code}", file=sys.stderr)
-            return False
-    except Exception as e:
-        print(f"❌ Discord send failed: {e}", file=sys.stderr)
-        return False
+    print(f"DISCORD_ALERT: {json.dumps(alert_output)}")
+    return True
 
 
 def send_email(message: str, priority: str, subject: str):
