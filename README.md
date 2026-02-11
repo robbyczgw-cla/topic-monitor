@@ -8,7 +8,7 @@ Topic Monitor transforms your assistant from reactive to proactive by continuous
 
 - 🔍 **Automated Monitoring** - Scheduled web searches for your topics
 - 🧠 **AI Importance Scoring** - Smart filtering: alert vs digest vs ignore
-- 📱 **Multi-Channel Alerts** - Telegram, Discord, Email
+- 📱 **Multi-Channel Alerts** - Telegram, Discord, Email (agent-delivered)
 - 📊 **Weekly Digests** - Curated summaries of interesting findings
 - 🧩 **Memory Integration** - Contextual alerts referencing your past conversations
 - ⚡ **Rate Limiting** - Prevent alert fatigue
@@ -158,7 +158,7 @@ python3 scripts/setup_cron.py --remove
 
 - **web-search-plus** - Intelligent search routing (Serper, Tavily, Exa)
 - **personal-analytics** - Get topic recommendations from your chat patterns
-- **OpenClaw message tool** - Send alerts via Telegram, Discord
+- **OpenClaw message tool** - Send alerts via Telegram/Discord from structured JSON output
 
 ### Channel Setup
 
@@ -176,15 +176,17 @@ Configure in config.json:
 ```
 
 #### Discord
-Add webhook URL:
+No webhook is needed in `config.json`. `monitor.py` now emits `DISCORD_ALERT` JSON lines and your OpenClaw agent delivers them via the message tool (same pattern as Telegram).
+
+Minimal topic-level channel usage:
 ```json
 {
-  "channels": {
-    "discord": {
-      "enabled": true,
-      "webhook_url": "https://discord.com/api/webhooks/..."
+  "topics": [
+    {
+      "name": "Team Updates",
+      "channels": ["discord"]
     }
-  }
+  ]
 }
 ```
 
@@ -195,6 +197,7 @@ Add webhook URL:
 | `TOPIC_MONITOR_TELEGRAM_ID` | — | Telegram chat ID for alerts (required for Telegram) |
 | `TOPIC_MONITOR_DATA_DIR` | `.data/` | Directory for state and findings files |
 | `WEB_SEARCH_PLUS_PATH` | Relative to skill | Path to web-search-plus search.py script |
+| `SERPER_API_KEY` / `TAVILY_API_KEY` / `EXA_API_KEY` / `YOU_API_KEY` / `SEARXNG_INSTANCE_URL` / `WSP_CACHE_DIR` | — | Optional search-provider vars forwarded via subprocess env allowlist |
 
 **Example:**
 ```bash
@@ -210,6 +213,8 @@ export WEB_SEARCH_PLUS_PATH="/path/to/skills/web-search-plus/scripts/search.py"
 - Learning data stays on your machine
 - State files are gitignored
 - **No hardcoded personal info** — configure via environment variables
+- Search subprocess uses env allowlist only (`PATH`, `HOME`, `LANG`, `TERM` + search provider keys)
+- No direct HTTP calls from topic-monitor skill code
 
 ## Requirements
 

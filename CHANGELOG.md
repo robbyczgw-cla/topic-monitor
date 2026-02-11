@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.3] - 2026-02-11
+
+### Changed
+
+- **Subprocess env hardening:** `monitor.py` now uses an allowlist for web-search-plus subprocess environment (`PATH`, `HOME`, `LANG`, `TERM` + search provider keys only).
+- **Discord delivery flow:** Removed webhook-style delivery from skill docs/flow; Discord alerts are now emitted as structured JSON (`DISCORD_ALERT`) for OpenClaw agent delivery (same pattern as Telegram).
+- **No direct HTTP calls:** Alerting/search integration is documented as agent-mediated JSON output + subprocess execution, without direct outbound HTTP from topic-monitor skill code.
+
 ## [1.3.2] - 2026-02-11
 
 ### 🆕 Real Alerting System
