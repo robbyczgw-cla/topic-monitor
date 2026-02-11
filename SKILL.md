@@ -2,7 +2,7 @@
 name: topic-monitor
 version: 1.3.2
 description: Monitor topics of interest and proactively alert when important developments occur. Use when user wants automated monitoring of specific subjects (e.g., product releases, price changes, news topics, technology updates). Supports scheduled web searches, AI-powered importance scoring, smart alerts vs weekly digests, and memory-aware contextual summaries.
-metadata: {"openclaw":{"requires":{"bins":["python3"],"env":{"TOPIC_MONITOR_TELEGRAM_ID":"optional","TOPIC_MONITOR_DATA_DIR":"optional","WEB_SEARCH_PLUS_PATH":"optional"},"note":"Env vars optional. Defaults work out of the box."}}}
+metadata: {"openclaw":{"requires":{"bins":["python3"],"env":{"TOPIC_MONITOR_TELEGRAM_ID":"optional - Telegram chat ID for alerts","TOPIC_MONITOR_DATA_DIR":"optional - defaults to .data/ in skill dir","WEB_SEARCH_PLUS_PATH":"optional - defaults to relative path"},"note":"All env vars optional. Defaults work out of the box."}}}
 ---
 
 # Topic Monitor
@@ -509,9 +509,29 @@ Prevent alert fatigue:
 }
 ```
 
+## Environment Variables
+
+Configure these environment variables to customize topic-monitor:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `TOPIC_MONITOR_TELEGRAM_ID` | — | Your Telegram chat ID for receiving alerts |
+| `TOPIC_MONITOR_DATA_DIR` | `.data/` in skill dir | Where to store state and findings |
+| `WEB_SEARCH_PLUS_PATH` | Relative to skill | Path to web-search-plus search.py |
+
+**Example setup:**
+```bash
+# Add to ~/.bashrc or .env
+export TOPIC_MONITOR_TELEGRAM_ID="123456789"
+export TOPIC_MONITOR_DATA_DIR="/home/user/topic-monitor-data"
+export WEB_SEARCH_PLUS_PATH="/path/to/skills/web-search-plus/scripts/search.py"
+```
+
 ## State Management
 
 ### .research_state.json
+
+Stored in `TOPIC_MONITOR_DATA_DIR` (default: `.data/` in skill directory).
 
 Tracks:
 - Last check time per topic
