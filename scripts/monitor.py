@@ -73,15 +73,20 @@ def search_topic(topic: Dict, dry_run: bool = False, verbose: bool = False) -> L
     
     if web_search_plus.exists():
         import subprocess
+        import re
         try:
+            # Sanitize query: strip control chars, limit length
+            safe_query = re.sub(r'[\x00-\x1f\x7f]', '', query)[:500]
+            
             if verbose:
-                print(f"   🔍 Searching via web-search-plus: {query}")
+                print(f"   🔍 Searching via web-search-plus: {safe_query}")
             
             # Call web-search-plus (outputs JSON by default)
+            # Using list args (not shell=True) prevents shell injection
             result = subprocess.run(
                 [
                     "python3", str(web_search_plus),
-                    "--query", query,
+                    "--query", safe_query,
                     "--max-results", "5"
                 ],
                 capture_output=True,
