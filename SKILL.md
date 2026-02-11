@@ -1,8 +1,8 @@
 ---
 name: topic-monitor
-version: 1.3.1
+version: 1.3.2
 description: Monitor topics of interest and proactively alert when important developments occur. Use when user wants automated monitoring of specific subjects (e.g., product releases, price changes, news topics, technology updates). Supports scheduled web searches, AI-powered importance scoring, smart alerts vs weekly digests, and memory-aware contextual summaries.
-metadata: {"clawdbot":{"requires":{"bins":["python3"],"env":[]}}}
+metadata: {"openclaw":{"requires":{"bins":["python3"],"env":{"TOPIC_MONITOR_TELEGRAM_ID":"optional","TOPIC_MONITOR_DATA_DIR":"optional","WEB_SEARCH_PLUS_PATH":"optional"},"note":"Env vars optional. Defaults work out of the box."}}}
 ---
 
 # Topic Monitor
