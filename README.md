@@ -188,12 +188,28 @@ Add webhook URL:
 }
 ```
 
+## Configuration via Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `TOPIC_MONITOR_TELEGRAM_ID` | — | Telegram chat ID for alerts (required for Telegram) |
+| `TOPIC_MONITOR_DATA_DIR` | `.data/` | Directory for state and findings files |
+| `WEB_SEARCH_PLUS_PATH` | Relative to skill | Path to web-search-plus search.py script |
+
+**Example:**
+```bash
+export TOPIC_MONITOR_TELEGRAM_ID="123456789"
+export TOPIC_MONITOR_DATA_DIR="/path/to/data"
+export WEB_SEARCH_PLUS_PATH="/path/to/skills/web-search-plus/scripts/search.py"
+```
+
 ## Privacy
 
 - All data stored locally
 - No external services except search APIs
 - Learning data stays on your machine
 - State files are gitignored
+- **No hardcoded personal info** — configure via environment variables
 
 ## Requirements
 
