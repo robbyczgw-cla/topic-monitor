@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from config import (
     load_config, load_state, save_state, get_settings,
-    get_channel_config, save_finding
+    get_channel_config, save_finding, queue_alert, ALERTS_QUEUE
 )
 from importance_scorer import score_result
 
@@ -54,41 +54,84 @@ def mark_as_seen(url: str, state: Dict):
     state["deduplication"]["url_hash_map"][url_hash] = datetime.now().isoformat()
 
 
-def search_topic(topic: Dict, dry_run: bool = False) -> List[Dict]:
+def search_topic(topic: Dict, dry_run: bool = False, verbose: bool = False) -> List[Dict]:
     """
-    Search for topic using available search tools.
+    Search for topic using web-search-plus (Serper/Tavily/Exa).
     
-    In real OpenClaw environment, this would use web_search tool.
-    For standalone testing, returns mock results.
+    Uses the web-search-plus skill for multi-provider search with better
+    results than the built-in Brave search.
     """
     query = topic.get("query", "")
     
-    # Try to use web-search-plus if available
-    web_search_plus = Path(__file__).parent.parent.parent / "web-search-plus" / "scripts" / "search.py"
+    if not query:
+        print("⚠️ No query specified for topic", file=sys.stderr)
+        return []
+    
+    # Use web-search-plus skill (preferred over built-in Brave)
+    web_search_plus = Path("/root/clawd/skills/web-search-plus/scripts/search.py")
     
     if web_search_plus.exists():
         import subprocess
         try:
+            if verbose:
+                print(f"   🔍 Searching via web-search-plus: {query}")
+            
+            # Call web-search-plus (outputs JSON by default)
             result = subprocess.run(
-                ["python3", str(web_search_plus), "--query", query, "--max-results", "5"],
+                [
+                    "python3", str(web_search_plus),
+                    "--query", query,
+                    "--max-results", "5"
+                ],
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=45,  # Increased timeout for API calls
+                env={**dict(__import__('os').environ)}  # Pass environment for API keys
             )
             
             if result.returncode == 0:
-                data = json.loads(result.stdout)
-                return data.get("results", [])
+                # Parse JSON output
+                try:
+                    # web-search-plus might output additional info before JSON
+                    stdout = result.stdout.strip()
+                    # Find JSON in output (might have status messages before)
+                    json_start = stdout.find('{')
+                    if json_start >= 0:
+                        json_str = stdout[json_start:]
+                        data = json.loads(json_str)
+                        results = data.get("results", [])
+                        
+                        if verbose:
+                            provider = data.get("provider", "unknown")
+                            print(f"   ✅ Got {len(results)} results from {provider}")
+                        
+                        return results
+                except json.JSONDecodeError as e:
+                    if verbose:
+                        print(f"   ⚠️ Failed to parse search results: {e}", file=sys.stderr)
+                        print(f"   Raw output: {result.stdout[:200]}", file=sys.stderr)
+            else:
+                if verbose:
+                    print(f"   ⚠️ web-search-plus returned code {result.returncode}", file=sys.stderr)
+                    if result.stderr:
+                        print(f"   Stderr: {result.stderr[:200]}", file=sys.stderr)
+                        
+        except subprocess.TimeoutExpired:
+            print(f"⚠️ web-search-plus timed out for query: {query}", file=sys.stderr)
         except Exception as e:
             print(f"⚠️ web-search-plus failed: {e}", file=sys.stderr)
+    else:
+        print(f"⚠️ web-search-plus not found at {web_search_plus}", file=sys.stderr)
     
-    # Fallback: Return mock results for testing
+    # Fallback: Return mock results for dry-run testing only
     if dry_run:
+        if verbose:
+            print(f"   ℹ️ Using mock results for dry-run")
         return [
             {
-                "title": f"Mock result for {query}",
+                "title": f"[Mock] Result for: {query}",
                 "url": f"https://example.com/mock-{hashlib.md5(query.encode()).hexdigest()[:8]}",
-                "snippet": f"This is a test result for query: {query}",
+                "snippet": f"This is a mock/test result for query: {query}. Run without --dry-run to use real search.",
                 "published_date": datetime.now().isoformat()
             }
         ]
@@ -151,10 +194,15 @@ def check_rate_limits(topic: Dict, state: Dict, settings: Dict) -> bool:
 
 
 def send_alert(topic: Dict, result: Dict, priority: str, score: float, reason: str, dry_run: bool = False):
-    """Send alert via configured channels."""
+    """
+    Send alert via configured channels.
+    
+    For Telegram: Queues alert for delivery by OpenClaw agent, then outputs
+    structured JSON that the agent can parse and send via message tool.
+    """
     channels = topic.get("channels", [])
     
-    # Build message
+    # Build formatted message
     emoji_map = {"high": "🔥", "medium": "📌", "low": "📝"}
     emoji = emoji_map.get(priority, "📌")
     
@@ -162,15 +210,30 @@ def send_alert(topic: Dict, result: Dict, priority: str, score: float, reason: s
     topic_emoji = topic.get("emoji", "🔍")
     context = topic.get("context", "")
     
-    message = f"{emoji} **{topic_name}** {topic_emoji}\n\n"
-    message += f"**{result['title']}**\n\n"
-    message += f"{result.get('snippet', '')}\n\n"
+    # Build nice formatted message
+    lines = []
+    lines.append(f"{emoji} **{topic_name}** {topic_emoji}")
+    lines.append("")
+    lines.append(f"**{result.get('title', 'Untitled')}**")
+    lines.append("")
+    
+    snippet = result.get('snippet', '')
+    if snippet:
+        # Truncate long snippets
+        if len(snippet) > 300:
+            snippet = snippet[:297] + "..."
+        lines.append(snippet)
+        lines.append("")
     
     if context:
-        message += f"💡 *Context:* {context}\n\n"
+        lines.append(f"💡 _Context: {context}_")
+        lines.append("")
     
-    message += f"🔗 {result['url']}\n\n"
-    message += f"_Score: {score:.2f} | {reason}_"
+    lines.append(f"🔗 {result.get('url', '')}")
+    lines.append("")
+    lines.append(f"📊 _Score: {score:.2f} | {reason}_")
+    
+    message = "\n".join(lines)
     
     if dry_run:
         print(f"\n{'='*60}")
@@ -179,27 +242,88 @@ def send_alert(topic: Dict, result: Dict, priority: str, score: float, reason: s
         print(f"Priority: {priority.upper()}")
         print(f"\n{message}")
         print(f"{'='*60}\n")
-        return
+        return None
     
-    # Send to channels
+    # Queue alert for each channel
+    alert_ids = []
     for channel in channels:
-        if channel == "telegram":
-            send_telegram(message, priority)
-        elif channel == "discord":
-            send_discord(message, priority)
-        elif channel == "email":
-            send_email(message, priority, topic_name)
+        alert_data = {
+            "timestamp": datetime.now().isoformat(),
+            "priority": priority,
+            "channel": channel,
+            "topic_id": topic.get("id"),
+            "topic_name": topic_name,
+            "title": result.get("title", ""),
+            "snippet": result.get("snippet", ""),
+            "url": result.get("url", ""),
+            "score": score,
+            "reason": reason,
+            "message": message,  # Pre-formatted message
+            "context": context
+        }
+        
+        alert_id = queue_alert(alert_data)
+        alert_ids.append(alert_id)
+        
+        # Output structured alert for agent consumption
+        print(f"📢 ALERT_QUEUED: {json.dumps({'id': alert_id, 'channel': channel, 'priority': priority, 'topic': topic_name})}")
+    
+    return alert_ids
+
+
+def format_alert_for_telegram(alert: Dict) -> str:
+    """Format an alert for Telegram delivery."""
+    if alert.get("message"):
+        return alert["message"]
+    
+    # Fallback formatting if no pre-formatted message
+    emoji_map = {"high": "🔥", "medium": "📌", "low": "📝"}
+    emoji = emoji_map.get(alert.get("priority", "medium"), "📌")
+    
+    lines = [
+        f"{emoji} **{alert.get('topic_name', 'Alert')}**",
+        "",
+        f"**{alert.get('title', 'Untitled')}**",
+        "",
+    ]
+    
+    if alert.get("snippet"):
+        lines.append(alert["snippet"][:300])
+        lines.append("")
+    
+    if alert.get("url"):
+        lines.append(f"🔗 {alert['url']}")
+        lines.append("")
+    
+    lines.append(f"📊 _Score: {alert.get('score', 0):.2f}_")
+    
+    return "\n".join(lines)
 
 
 def send_telegram(message: str, priority: str):
-    """Send via Telegram (requires OpenClaw message tool)."""
-    # In real environment, this would use OpenClaw's message tool
-    # For now, just log
-    print(f"📱 [TELEGRAM] {priority.upper()}: {message[:100]}...")
+    """
+    Send via Telegram using OpenClaw message tool.
+    
+    This function is called when processing the alerts queue.
+    The actual sending is done by the OpenClaw agent using the message tool.
+    """
+    # This is now a helper that outputs the alert for agent processing
+    # The actual message tool call happens via the agent
+    print(f"📱 [TELEGRAM/{priority.upper()}] Alert ready for delivery ({len(message)} chars)")
+    
+    # Output in a format the agent can parse
+    alert_output = {
+        "action": "send_telegram",
+        "priority": priority,
+        "message": message,
+        "target": "7754134287",  # Robby's Telegram ID
+        "channel": "telegram"
+    }
+    print(f"TELEGRAM_ALERT: {json.dumps(alert_output)}")
 
 
 def send_discord(message: str, priority: str):
-    """Send via Discord webhook."""
+    """Send via Discord webhook (direct HTTP, no agent needed)."""
     import requests
     from config import get_channel_config
     
@@ -208,7 +332,7 @@ def send_discord(message: str, priority: str):
     
     if not webhook_url:
         print("⚠️ Discord webhook not configured", file=sys.stderr)
-        return
+        return False
     
     payload = {
         "username": discord_config.get("username", "Research Bot"),
@@ -217,15 +341,23 @@ def send_discord(message: str, priority: str):
     }
     
     try:
-        requests.post(webhook_url, json=payload, timeout=10)
-        print(f"✅ Sent to Discord")
+        resp = requests.post(webhook_url, json=payload, timeout=10)
+        if resp.status_code in (200, 204):
+            print(f"✅ Sent to Discord")
+            return True
+        else:
+            print(f"❌ Discord returned {resp.status_code}", file=sys.stderr)
+            return False
     except Exception as e:
         print(f"❌ Discord send failed: {e}", file=sys.stderr)
+        return False
 
 
 def send_email(message: str, priority: str, subject: str):
-    """Send via email."""
+    """Send via email (placeholder - would need SMTP config)."""
     print(f"📧 [EMAIL] {priority.upper()}: {subject}")
+    # TODO: Implement actual email sending via SMTP or SendGrid
+    return False
 
 
 def monitor_topic(topic: Dict, state: Dict, settings: Dict, dry_run: bool = False, verbose: bool = False):
@@ -236,8 +368,8 @@ def monitor_topic(topic: Dict, state: Dict, settings: Dict, dry_run: bool = Fals
     if verbose:
         print(f"\n🔍 Checking topic: {topic_name} ({topic_id})")
     
-    # Search
-    results = search_topic(topic, dry_run=dry_run)
+    # Search using web-search-plus
+    results = search_topic(topic, dry_run=dry_run, verbose=verbose)
     
     if verbose:
         print(f"   Found {len(results)} results")
