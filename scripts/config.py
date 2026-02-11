@@ -4,14 +4,15 @@ Configuration loader for proactive-research skill.
 """
 
 import json
+import os
 from pathlib import Path
 from typing import Dict, List, Optional
 
 SKILL_DIR = Path(__file__).parent.parent
 CONFIG_FILE = SKILL_DIR / "config.json"
 
-# State files go to memory/monitors/ for persistence outside skill dir
-MEMORY_DIR = Path("/root/clawd/memory/monitors")
+# State files: configurable via TOPIC_MONITOR_DATA_DIR env, defaults to skill-local .data/
+MEMORY_DIR = Path(os.environ.get("TOPIC_MONITOR_DATA_DIR", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".data")))
 STATE_FILE = MEMORY_DIR / "topic-monitor-state.json"
 FINDINGS_DIR = MEMORY_DIR / "findings"
 ALERTS_QUEUE = MEMORY_DIR / "alerts-queue.json"
