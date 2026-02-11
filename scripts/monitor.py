@@ -6,6 +6,7 @@ Checks topics due for monitoring, scores findings, and sends alerts.
 Run via cron for automated monitoring.
 """
 
+import os
 import sys
 import json
 import hashlib
@@ -68,7 +69,7 @@ def search_topic(topic: Dict, dry_run: bool = False, verbose: bool = False) -> L
         return []
     
     # Use web-search-plus skill (preferred over built-in Brave)
-    web_search_plus = Path("/root/clawd/skills/web-search-plus/scripts/search.py")
+    web_search_plus = Path(os.environ.get("WEB_SEARCH_PLUS_PATH", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "web-search-plus", "scripts", "search.py")))
     
     if web_search_plus.exists():
         import subprocess
@@ -316,7 +317,7 @@ def send_telegram(message: str, priority: str):
         "action": "send_telegram",
         "priority": priority,
         "message": message,
-        "target": "7754134287",  # Robby's Telegram ID
+        "target": os.environ.get("TOPIC_MONITOR_TELEGRAM_ID", ""),
         "channel": "telegram"
     }
     print(f"TELEGRAM_ALERT: {json.dumps(alert_output)}")

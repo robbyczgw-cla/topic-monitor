@@ -11,6 +11,7 @@ Usage:
     python3 process_alerts.py --mark-sent  # Mark all as sent (after agent sends them)
 """
 
+import os
 import sys
 import json
 import argparse
@@ -101,7 +102,7 @@ def output_json_for_agent():
             "id": alert.get("id"),
             "priority": alert.get("priority", "medium"),
             "channel": alert.get("channel", "telegram"),
-            "target": "7754134287",  # Robby's Telegram ID
+            "target": os.environ.get("TOPIC_MONITOR_TELEGRAM_ID", ""),
             "topic_name": alert.get("topic_name"),
             "title": alert.get("title"),
             "url": alert.get("url"),
