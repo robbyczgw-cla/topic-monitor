@@ -1,4 +1,6 @@
 # Topic Monitor
+> ⭐ **Featured on DigitalOcean** — Listed as `proactive-research` in [DigitalOcean's OpenClaw Skills guide](https://www.digitalocean.com/resources/articles/what-are-openclaw-skills) (February 2026)
+
 
 **Never miss what matters. Get alerted when it happens.**
 
