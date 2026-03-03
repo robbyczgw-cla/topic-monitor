@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.5] - 2026-03-03
+
+### Changed
+- Hardened subprocess handling and synced monitor docs/metadata.
+
+
 ## [1.3.3] - 2026-02-11
 
 ### Changed
