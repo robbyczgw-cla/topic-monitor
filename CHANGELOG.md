@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.5.0] - 2026-03-26
+
+### Added
+- RSS/Atom feed monitoring as first-class source alongside web search
+- Feed auto-discovery from any URL
+- OPML import/export support
+- ETag/Last-Modified caching for efficient feed polling
+- Boolean query filters: `exclude_keywords` and `required_keywords` per topic
+- Sentiment analysis (positive/negative/neutral/mixed) in importance scoring
+- `alert_on_sentiment_shift` config option per topic
+- Sentiment history tracking in state
+- GitHub release monitoring via `github_repos` config
+- Vendored feedparser (zero pip install needed)
+- Feed discovery via `manage_topics.py discover-feed`
+- OPML import via `manage_topics.py import-opml`
+
 ## [1.3.5] - 2026-03-03
 
 ### Changed

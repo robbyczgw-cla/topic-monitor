@@ -55,6 +55,10 @@ def format_alert_message(alert: dict) -> str:
         lines.append("")
     
     lines.append(f"📊 _Score: {alert.get('score', 0):.2f} | {alert.get('reason', '')}_")
+    if alert.get("sentiment"):
+        lines.append(f"🙂 _Sentiment: {alert['sentiment']}_")
+    if alert.get("sentiment_shift"):
+        lines.append("🔄 _Sentiment shift detected_")
     
     return "\n".join(lines)
 

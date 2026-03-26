@@ -137,12 +137,15 @@ def generate_digest(findings_by_topic: dict, start: datetime, end: datetime) -> 
             result = finding.get("result", {})
             score = finding.get("score", 0)
             reason = finding.get("reason", "")
+            sentiment = finding.get("sentiment", "")
             
             digest += f"- **{result.get('title', 'Untitled')}** ({score:.2f})\n"
             digest += f"  {result.get('snippet', '')[:150]}...\n"
             digest += f"  🔗 {result.get('url', '')}\n"
             if reason:
                 digest += f"  _Reason: {reason}_\n"
+            if sentiment:
+                digest += f"  _Sentiment: {sentiment}_\n"
             digest += "\n"
         
         if len(sorted_findings) > 5:

@@ -51,7 +51,9 @@ def load_state() -> Dict:
     return {
         "topics": {},
         "deduplication": {"url_hash_map": {}},
-        "learning": {"interactions": []}
+        "learning": {"interactions": []},
+        "feeds": {},
+        "sentiment": {}
     }
 
 

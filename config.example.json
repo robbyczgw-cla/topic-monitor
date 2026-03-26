@@ -5,11 +5,16 @@
       "name": "Example Topic",
       "query": "search query here",
       "keywords": ["keyword1", "keyword2", "keyword3"],
+      "feeds": ["https://example.com/rss.xml"],
+      "github_repos": ["openclaw/openclaw"],
+      "required_keywords": ["release"],
+      "exclude_keywords": ["rumor", "affiliate"],
       "frequency": "daily",
       "importance_threshold": "medium",
       "channels": ["telegram"],
       "context": "Why this topic matters to you",
-      "alert_on": ["keyword_exact_match"],
+      "alert_on": ["keyword_exact_match", "github_release"],
+      "alert_on_sentiment_shift": true,
       "ignore_sources": [],
       "boost_sources": []
     }
