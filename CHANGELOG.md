@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.1] - 2026-03-29
+
+### Fixed
+- **Critical: `alert_on` config was completely ignored** — topics with `alert_on: ["github_release"]` never triggered high-priority alerts because the code never read the field. GitHub releases were scored like regular web search results and often fell below the importance threshold. This was a day-1 bug present since the feature was documented.
+- Now: when a result's source matches any entry in `alert_on`, it is automatically forced to HIGH priority with score 0.9, bypassing normal scoring.
+
 ## [1.5.0] - 2026-03-26
 
 ### Added

@@ -561,6 +561,16 @@ def monitor_topic(topic: Dict, state: Dict, settings: Dict, dry_run: bool = Fals
         priority, score, reason, sentiment = score_result(result, topic, settings)
         sentiment_shift = sentiment_shifted(topic, state, sentiment)
 
+        # alert_on override: if the result source matches alert_on config, force high priority
+        alert_on = normalize_text_list(topic.get("alert_on", []))
+        result_source = result.get("source", "")
+        if alert_on and result_source in alert_on:
+            priority = "high"
+            score = max(score, 0.9)
+            reason = f"alert_on:{result_source}"
+            if verbose:
+                print(f"   🚨 alert_on match: {result_source} → forced HIGH priority")
+
         if sentiment_shift and priority == "medium":
             priority = "high"
             reason = f"{reason} + sentiment_shift"
