@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.2] - 2026-03-29
+
+### Fixed
+- Removed personal chat_id from published config
+
 ## [1.5.1] - 2026-03-29
 
 ### Fixed
